@@ -7,6 +7,8 @@ package factories;
 
 import controllers.IController;
 import controllers.MainController;
+import java.util.ArrayList;
+import java.util.List;
 import models.Website;
 import views.DrawWindow;
 import views.IWindow;
@@ -18,22 +20,23 @@ import views.MainWindow;
  */
 public class WebsiteMakerFactory {
     public static IWindow create(String viewName) {
-        Website model = new Website();
         IWindow view;
         IController controller;
         
         switch(viewName){
             case "main":
                 view = new MainWindow();
-                controller = new MainController(model, view);
+                List<Website> modelList = new ArrayList<>();
+                controller = new MainController(modelList, view);
+                ((MainController) controller).initialize();
                 break;
             case "create":
+                Website model = new Website();
                 view = new DrawWindow(null); // TODO: Model as parameter
                 break;
             default:
                 throw new IllegalArgumentException(" this type View does not exist");
         }
-        
         
         return view;
     }

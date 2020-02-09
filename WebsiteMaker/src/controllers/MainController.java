@@ -6,6 +6,14 @@
 package controllers;
 
 import factories.WebsiteMakerFactory;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -18,13 +26,33 @@ import views.IWindow;
  * @author Rafae
  */
 public class MainController implements IController{
-    private Website model; 
+    private List<Website> modelList; 
     private IWindow view;
+    private Path basePath; //TODO: Set this variable to be a Singleton
 
-    public MainController(Website model, IWindow view) {
-        this.model = model;
+    public MainController(List<Website> modelList, IWindow view) {
+        this.modelList = modelList;
         this.view = view;
         this.view.setTriggers(this);
+        basePath = Paths.get("MyWebsites");
+    }
+    
+    public void initialize() {
+        System.out.println("###########################");
+        System.out.println("###########################");
+        System.out.println("Initializing");
+        System.out.println("###########################");
+        System.out.println("###########################");
+        
+        if(!Files.exists(basePath)) {
+            try {
+                Files.createDirectory(basePath);
+            } catch (IOException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        
     }
     
     public void createWebsite() {
