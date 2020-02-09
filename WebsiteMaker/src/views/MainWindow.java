@@ -6,10 +6,8 @@
 package views;
 
 import controllers.MainController;
-import factories.WebsiteMakerFactory;
 import java.util.Observable;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,8 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  *
@@ -59,10 +55,6 @@ public final class MainWindow implements IWindow {
         
         listView = new ListView();
         listView.setPrefHeight(600.0);
-        listView.getItems().add(new Text("Website1"));
-        listView.getItems().add(new Text("Website2"));
-        listView.getItems().add(new Text("Website3"));
-        listView.getItems().add(new Text("Website4"));
         
         leftVBox.getChildren().add(listView);
         

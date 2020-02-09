@@ -6,6 +6,7 @@
 package controllers;
 
 import factories.WebsiteMakerFactory;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import models.Website;
+import models.Websites;
 import views.DrawWindow;
 import views.IWindow;
 
@@ -26,33 +28,33 @@ import views.IWindow;
  * @author Rafae
  */
 public class MainController implements IController{
-    private List<Website> modelList; 
+    private Websites model; 
     private IWindow view;
-    private Path basePath; //TODO: Set this variable to be a Singleton
+    private String basePath; //TODO: Set this variable to be a Singleton
 
-    public MainController(List<Website> modelList, IWindow view) {
-        this.modelList = modelList;
+    public MainController(Websites model, IWindow view) {
+        this.model = model;
         this.view = view;
         this.view.setTriggers(this);
-        basePath = Paths.get("MyWebsites");
+        basePath = "MyWebsites";
     }
     
     public void initialize() {
-        System.out.println("###########################");
-        System.out.println("###########################");
-        System.out.println("Initializing");
-        System.out.println("###########################");
-        System.out.println("###########################");
         
-        if(!Files.exists(basePath)) {
+        Path path = Paths.get(basePath);
+        
+        if(!Files.exists(path)) {
             try {
-                Files.createDirectory(basePath);
+                Files.createDirectory(path);
             } catch (IOException ex) {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
-        
+        File folder = new File(basePath);
+        if (folder.list().length > 0) {
+            this.model.getWebsites().add(new Website(folder.getName()));
+        }
     }
     
     public void createWebsite() {

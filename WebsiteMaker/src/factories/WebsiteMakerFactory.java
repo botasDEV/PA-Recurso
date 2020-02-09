@@ -10,6 +10,7 @@ import controllers.MainController;
 import java.util.ArrayList;
 import java.util.List;
 import models.Website;
+import models.Websites;
 import views.DrawWindow;
 import views.IWindow;
 import views.MainWindow;
@@ -26,7 +27,7 @@ public class WebsiteMakerFactory {
         switch(viewName){
             case "main":
                 view = new MainWindow();
-                List<Website> modelList = new ArrayList<>();
+                Websites modelList = new Websites();
                 controller = new MainController(modelList, view);
                 ((MainController) controller).initialize();
                 break;

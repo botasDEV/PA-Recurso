@@ -23,11 +23,24 @@ import java.util.Map;
  * @author Rafae
  */
 public class Website implements Graph<Page, Hyperlink>{
-    
+    private String name;
     private Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap; // Works as Vertex
 
     public Website() {
         adjacenciesMap = new HashMap<>();
+    }
+    
+    public Website(String name) {
+        this.name = name;
+        adjacenciesMap = new HashMap<>();
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
     
     @Override
