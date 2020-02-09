@@ -31,8 +31,8 @@ public class Website implements Graph<Page, Hyperlink>{
     }
     
     public Website(String name) {
+        this();
         this.name = name;
-        adjacenciesMap = new HashMap<>();
     }
     
     public String getName() {

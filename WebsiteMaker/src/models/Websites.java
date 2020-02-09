@@ -23,5 +23,11 @@ public class Websites extends Observable {
     public List<Website> getWebsites() {
         return websites;
     }
+    
+    public void addWebsite(Website website){
+        this.websites.add(website);
+        setChanged();
+        notifyObservers(this.websites);
+    }
 
 }

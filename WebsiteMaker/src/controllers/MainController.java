@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Scene;
@@ -36,11 +34,11 @@ public class MainController implements IController{
         this.model = model;
         this.view = view;
         this.view.setTriggers(this);
+        this.model.addObserver(view);
         basePath = "MyWebsites";
     }
     
     public void initialize() {
-        
         Path path = Paths.get(basePath);
         
         if(!Files.exists(path)) {
@@ -53,7 +51,9 @@ public class MainController implements IController{
         
         File folder = new File(basePath);
         if (folder.list().length > 0) {
-            this.model.getWebsites().add(new Website(folder.getName()));
+            for(String name : folder.list()) {
+                this.model.addWebsite(new Website(name));
+            }
         }
     }
     

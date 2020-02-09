@@ -6,7 +6,9 @@
 package views;
 
 import controllers.MainController;
+import java.util.List;
 import java.util.Observable;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,22 +23,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import models.Website;
+import models.Websites;
 
 /**
  *
  * @author Rafae
  */
 public final class MainWindow implements IWindow {
-
+    
     private final Scene scene;
     private Button createBtn;
     private Button editBtn;
     private Button deleteBtn;
     private Button graphBtn;
-   
     ListView listView;
     
-    public MainWindow() {
+    Websites websites;
+    
+    public MainWindow(Websites websites) {
+        this.websites = websites;
         Pane root = initComponents();
         scene = new Scene(root, 500, 500);
         root.setStyle("-fx-font: 12px \"Courier New\"");
@@ -55,6 +61,16 @@ public final class MainWindow implements IWindow {
         
         listView = new ListView();
         listView.setPrefHeight(600.0);
+        
+        if(websites.getWebsites().isEmpty()) {
+            listView.getItems().add("-- No Projects Yet --");
+            listView.disableProperty().set(true);
+        } else {
+            listView.disableProperty().set(false);
+            websites.getWebsites().forEach(website -> {
+                listView.getItems().add(website.getName());
+            });
+        }
         
         leftVBox.getChildren().add(listView);
         
@@ -88,19 +104,28 @@ public final class MainWindow implements IWindow {
     public Scene getScene() {
         return scene;
     }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-  
-
+    
     @Override
     public void setTriggers(MainController controller) {
         createBtn.setOnAction((ActionEvent event) -> {
             controller.createWebsite();
         });
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+        System.out.println("ATUALIZAR User Interface");
+        
+        listView.getItems().clear();
+        if(websites.getWebsites().isEmpty()) {
+            listView.getItems().add("-- No Projects Yet --");
+            listView.disableProperty().set(true);
+        } else {
+            listView.disableProperty().set(false);
+            websites.getWebsites().forEach(website -> {
+                listView.getItems().add(website.getName());
+            });
+        }        
     }
     
 }

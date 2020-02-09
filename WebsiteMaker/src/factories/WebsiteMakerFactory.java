@@ -7,8 +7,6 @@ package factories;
 
 import controllers.IController;
 import controllers.MainController;
-import java.util.ArrayList;
-import java.util.List;
 import models.Website;
 import models.Websites;
 import views.DrawWindow;
@@ -26,8 +24,8 @@ public class WebsiteMakerFactory {
         
         switch(viewName){
             case "main":
-                view = new MainWindow();
                 Websites modelList = new Websites();
+                view = new MainWindow(modelList);
                 controller = new MainController(modelList, view);
                 ((MainController) controller).initialize();
                 break;
