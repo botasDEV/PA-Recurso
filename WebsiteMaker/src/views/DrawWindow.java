@@ -5,16 +5,11 @@
  */
 package views;
 
-import com.brunomnsilva.smartgraph.graph.Graph;
-import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
-import controllers.DrawController;
 import controllers.IController;
-import controllers.MainController;
 import java.util.Observable;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -46,8 +41,13 @@ public final class DrawWindow implements IWindow {
     private int titleX = 5;
     private int btnX1 = 15;
     private int btnX2 = 100;
+    private Button createPage;
+    private Button deletePage;
+    private Button createHyperlink;
+    private Button deleteHyperlink;
+    private Button saveWebsite;
+    private Button exitDraw;
     
-        
     public DrawWindow(Website website) {
         this.website = website;
         Pane root = initComponents();
@@ -75,15 +75,15 @@ public final class DrawWindow implements IWindow {
         txt1.setLayoutY(35);
         txt1.setFont(Font.font("Courier New", FontWeight.EXTRA_BOLD, 25.0));
         
-        Button btn1 = new Button();
-        btn1.setGraphic(new ImageView("websitemaker/resources/images/add.png"));
-        btn1.setLayoutX(btnX1);
-        btn1.setLayoutY(50);
+        createPage = new Button();
+        createPage.setGraphic(new ImageView("websitemaker/resources/images/add.png"));
+        createPage.setLayoutX(btnX1);
+        createPage.setLayoutY(50);
         
-        Button btn2 = new Button();
-        btn2.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
-        btn2.setLayoutX(btnX2);
-        btn2.setLayoutY(50);
+        deletePage = new Button();
+        deletePage.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
+        deletePage.setLayoutX(btnX2);
+        deletePage.setLayoutY(50);
 
         
         Text txt2 = new Text("Hyperlink");
@@ -91,48 +91,42 @@ public final class DrawWindow implements IWindow {
         txt2.setLayoutY(200);
         txt2.setFont(Font.font("Courier New", FontWeight.EXTRA_BOLD, 25.0));
                 
-        Button btn3 = new Button();
-        btn3.setGraphic(new ImageView("websitemaker/resources/images/add.png"));
-        btn3.setLayoutX(btnX1);
-        btn3.setLayoutY(215);
+        createHyperlink = new Button();
+        createHyperlink.setGraphic(new ImageView("websitemaker/resources/images/add.png"));
+        createHyperlink.setLayoutX(btnX1);
+        createHyperlink.setLayoutY(215);
 
         
-        Button btn4 = new Button();
-        btn4.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
-        btn4.setLayoutX(btnX2);
-        btn4.setLayoutY(215);
+        deleteHyperlink = new Button();
+        deleteHyperlink.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
+        deleteHyperlink.setLayoutX(btnX2);
+        deleteHyperlink.setLayoutY(215);
         
         Text txt3 = new Text("Website");
         txt3.setLayoutX(titleX);
         txt3.setLayoutY(970);
         txt3.setFont(Font.font("Courier New", FontWeight.EXTRA_BOLD, 25.0));
         
-        Button btn5 = new Button();
-        btn5.setGraphic(new ImageView("websitemaker/resources/images/save.png"));
-        btn5.setLayoutX(btnX1);
-        btn5.setLayoutY(985);
+        saveWebsite = new Button();
+        saveWebsite.setGraphic(new ImageView("websitemaker/resources/images/save.png"));
+        saveWebsite.setLayoutX(btnX1);
+        saveWebsite.setLayoutY(985);
 
-        Button btn6 = new Button();
-        btn6.setGraphic(new ImageView("websitemaker/resources/images/cancel.png"));
-        btn6.setLayoutX(btnX2);
-        btn6.setLayoutY(985);
-        btn6.setOnAction(new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                stage.close();
-            }
-        });
+        exitDraw = new Button();
+        exitDraw.setGraphic(new ImageView("websitemaker/resources/images/cancel.png"));
+        exitDraw.setLayoutX(btnX2);
+        exitDraw.setLayoutY(985);
+        
         
         vBox.getChildren().add(txt1);
-        vBox.getChildren().add(btn1);
-        vBox.getChildren().add(btn2);
+        vBox.getChildren().add(createPage);
+        vBox.getChildren().add(deletePage);
         vBox.getChildren().add(txt2);
-        vBox.getChildren().add(btn3);
-        vBox.getChildren().add(btn4);
+        vBox.getChildren().add(createHyperlink);
+        vBox.getChildren().add(deleteHyperlink);
         vBox.getChildren().add(txt3);
-        vBox.getChildren().add(btn5);
-        vBox.getChildren().add(btn6);
+        vBox.getChildren().add(saveWebsite);
+        vBox.getChildren().add(exitDraw);
         
         GridPane gridPane = new GridPane();
         gridPane.setGridLinesVisible(true);
@@ -164,9 +158,13 @@ public final class DrawWindow implements IWindow {
 
     @Override
     public void setTriggers(IController controller) {
-        /*createBtn.setOnAction((ActionEvent event) -> {
-            ((DrawController)controller).createWebsite();
-        });*/
+        exitDraw.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
+                stage.close();
+            }
+        });
     }
     
 }

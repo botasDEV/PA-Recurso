@@ -63,7 +63,7 @@ public class MainController implements IController{
             titleDialog.setTitle("Website Title");
             titleDialog.setHeaderText("Insert a title for your  website:");
             titleDialog.setHeaderText("Title");
-            titleDialog.setResult("");
+            
             result = titleDialog.showAndWait();
             
             if (result.isPresent()) {
@@ -72,15 +72,17 @@ public class MainController implements IController{
             }
         } while (newWebsite != null && dao.alreadyExists(newWebsite.getName()));
         
-        createDummyWebsite(newWebsite);
-        System.out.println(newWebsite);
+        if (newWebsite != null) {
+            createDummyWebsite(newWebsite);
+            System.out.println(newWebsite);
 
-        DrawWindow drawWindow = (DrawWindow)WebsiteMakerFactory.create(newWebsite, "create");
-        Scene scene = drawWindow.getScene();
-        stage.setScene(scene);
-        stage.show();
+            DrawWindow drawWindow = (DrawWindow)WebsiteMakerFactory.create(newWebsite, "create");
+            Scene scene = drawWindow.getScene();
+            stage.setScene(scene);
+            stage.show();
 
-        drawWindow.getPanel().init();
+            drawWindow.getPanel().init();
+        }
     }    
     
     

@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Documentos/Licenciatura/PA/PA-Recurso/WebsiteMaker/src/factories/WebsiteMakerFactory.java</file>
-            <file>file:/D:/Documentos/Licenciatura/PA/PA-Recurso/WebsiteMaker/src/models/Websites.java</file>
-            <file>file:/D:/Documentos/Licenciatura/PA/PA-Recurso/WebsiteMaker/src/controllers/MainController.java</file>
-            <file>file:/D:/Documentos/Licenciatura/PA/PA-Recurso/WebsiteMaker/src/views/MainWindow.java</file>
+            <file>file:/D:/Documents/Licenciatura/PA/Projeto/PA-Recurso/WebsiteMaker/src/factories/WebsiteMakerFactory.java</file>
+            <file>file:/D:/Documents/Licenciatura/PA/Projeto/PA-Recurso/WebsiteMaker/src/websitemaker/dao/WebsiteFileDAO.java</file>
+            <file>file:/D:/Documents/Licenciatura/PA/Projeto/PA-Recurso/WebsiteMaker/src/websitemaker/WebsiteMaker.java</file>
+            <file>file:/D:/Documents/Licenciatura/PA/Projeto/PA-Recurso/WebsiteMaker/src/views/DrawWindow.java</file>
         </group>
     </open-files>
 </project-private>
