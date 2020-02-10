@@ -5,10 +5,9 @@
  */
 package views;
 
+import controllers.IController;
 import controllers.MainController;
-import java.util.List;
 import java.util.Observable;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import models.Website;
 import models.Websites;
 
 /**
@@ -106,9 +104,9 @@ public final class MainWindow implements IWindow {
     }
     
     @Override
-    public void setTriggers(MainController controller) {
+    public void setTriggers(IController controller) {
         createBtn.setOnAction((ActionEvent event) -> {
-            controller.createWebsite();
+            ((MainController)controller).createWebsite();
         });
     }
     
@@ -116,13 +114,14 @@ public final class MainWindow implements IWindow {
     public void update(Observable o, Object arg) {
         System.out.println("ATUALIZAR User Interface");
         
+        Websites sites = (Websites) arg;
         listView.getItems().clear();
-        if(websites.getWebsites().isEmpty()) {
+        if(sites.getWebsites().isEmpty()) {
             listView.getItems().add("-- No Projects Yet --");
             listView.disableProperty().set(true);
         } else {
             listView.disableProperty().set(false);
-            websites.getWebsites().forEach(website -> {
+            sites.getWebsites().forEach(website -> {
                 listView.getItems().add(website.getName());
             });
         }        

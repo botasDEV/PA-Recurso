@@ -5,6 +5,7 @@
  */
 package models;
 
+import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import digraph.InvalidEdgeException;
 import digraph.InvalidVertexException;
 import digraph.MyEdge;
@@ -17,12 +18,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 /**
  *
  * @author Rafae
  */
-public class Website implements Graph<Page, Hyperlink>{
+public class Website extends Observable implements Graph<Page, Hyperlink>{
     private String name;
     private Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap; // Works as Vertex
 
@@ -67,14 +69,15 @@ public class Website implements Graph<Page, Hyperlink>{
     @Override
     public Collection<Edge<Hyperlink, Page>> edges() {
         List<Edge<Hyperlink, Page>> hyperlinks = new ArrayList<>();
-        
-        adjacenciesMap.forEach((vertex, edges) -> {
-            edges.forEach((edge) -> {
-                if (!hyperlinks.contains(edge)) {
-                    hyperlinks.add((Edge<Hyperlink, Page>) edge);   
+        for(List<Edge<Hyperlink, Page>> edges : adjacenciesMap.values()) {
+            if (edges != null) {
+                for(Edge<Hyperlink, Page> edge : edges) {
+                    if (!hyperlinks.contains(edge)) {
+                        hyperlinks.add((Edge<Hyperlink, Page>) edge);   
+                    }
                 }
-            });
-        });    
+            }
+        }
         
         return hyperlinks;
     }
@@ -234,4 +237,23 @@ public class Website implements Graph<Page, Hyperlink>{
             throw new InvalidVertexException();
         }
     }
+    
+    public GraphEdgeList toGraphEdgeList(){
+        GraphEdgeList<Page, Hyperlink> graphEdgeList =  new GraphEdgeList();
+        
+        for(Vertex<Page> vertex : this.vertices()) {
+            graphEdgeList.insertVertex(vertex.element());
+        }
+        
+        for (Edge<Hyperlink, Page> edge : this.edges()) {
+            Vertex<Page> vertex1 = edge.vertices()[0];
+            Vertex<Page> vertex2 = edge.vertices()[1];
+            graphEdgeList.insertEdge(vertex1.element(), vertex2.element(), edge.element());
+        }
+        
+        
+        return graphEdgeList;
+    }
+    
+    
 }

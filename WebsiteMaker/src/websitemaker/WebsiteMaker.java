@@ -22,15 +22,13 @@ public class WebsiteMaker extends Application {
         primaryStage.setTitle("Website Maker");
         primaryStage.setResizable(false);
                 
-        IWindow view = WebsiteMakerFactory.create("main");
+        IWindow view = WebsiteMakerFactory.create(null, "main");
         Scene scene = view.getScene();
         
         primaryStage.setScene(scene);
         primaryStage.show();
     }
     
-
-
     /**
      * @param args the command line arguments
      */

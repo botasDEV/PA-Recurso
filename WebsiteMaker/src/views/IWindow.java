@@ -5,7 +5,7 @@
  */
 package views;
 
-import controllers.MainController;
+import controllers.IController;
 import java.util.Observer;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -35,6 +35,6 @@ public interface IWindow extends Observer {
      * 
      * @param controller 
      */
-    public void setTriggers(MainController controller);
+    public void setTriggers(IController controller);
     
 }

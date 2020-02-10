@@ -10,8 +10,11 @@ import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
+import controllers.DrawController;
+import controllers.IController;
 import controllers.MainController;
 import java.util.Observable;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,28 +29,30 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import models.Hyperlink;
+import models.Page;
 import models.Website;
 
 /**
  *
  * @author Rafae
  */
-public class DrawWindow implements IWindow {
+public final class DrawWindow implements IWindow {
 
     private Website website;
     
     private Scene scene;
-    private SmartGraphPanel<String, String> graphPanel;
+    private SmartGraphPanel<Page, Hyperlink> graphPanel;
     private int titleX = 5;
     private int btnX1 = 15;
     private int btnX2 = 100;
     
         
     public DrawWindow(Website website) {
+        this.website = website;
         Pane root = initComponents();
         scene = new Scene(root, 800, 600);
         root.setStyle("-fx-font: 12px \"Courier New\"");
-        this.website = website;
     }
     
     @Override
@@ -57,23 +62,9 @@ public class DrawWindow implements IWindow {
 
     @Override
     public Pane initComponents() {
-        Graph<String, String> graph = new GraphEdgeList();   
-        graph.insertVertex("A");
-        graph.insertVertex("B");
-        graph.insertVertex("C");
-        graph.insertVertex("D");
-        graph.insertVertex("E");
-        graph.insertVertex("F");
-
-        graph.insertEdge("A", "B", "AB");
-        graph.insertEdge("B", "A", "AB2");
-        graph.insertEdge("A", "C", "AC");
-        graph.insertEdge("A", "D", "AD");
-        graph.insertEdge("B", "C", "BC");
-        graph.insertEdge("F", "D", "DF2"); 
         
         SmartPlacementStrategy strategy = new SmartCircularSortedPlacementStrategy();
-        graphPanel = new SmartGraphPanel<>(graph, strategy);
+        graphPanel = new SmartGraphPanel<>(website.toGraphEdgeList(), strategy);
         
         
         Pane vBox = new Pane();
@@ -172,8 +163,10 @@ public class DrawWindow implements IWindow {
     }
 
     @Override
-    public void setTriggers(MainController controller) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setTriggers(IController controller) {
+        /*createBtn.setOnAction((ActionEvent event) -> {
+            ((DrawController)controller).createWebsite();
+        });*/
     }
     
 }
