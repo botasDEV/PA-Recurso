@@ -9,7 +9,11 @@ import adapter.GraphEdgleListAdapter;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import controllers.DrawController;
 import controllers.IController;
+import digraph.Vertex;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -17,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -30,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import models.Page;
 import models.Website;
 
 /**
@@ -176,13 +182,27 @@ public final class DrawWindow implements IWindow {
                 Dialog dialog = createPageDialog(controller);
             }
         });
-    }    
-    private Dialog createPageDialog(IController controller){
+        
+        createHyperlink.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Dialog dialog = createHyperlinkDialog(controller);
+            }
+        });
+    }
+
+    private Dialog generateDialog(){
         Dialog dialog = new Dialog();
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
         Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
         closeButton.managedProperty().bind(closeButton.visibleProperty());
         closeButton.setVisible(false);
+        
+        return dialog;
+    }
+    
+    private Dialog createPageDialog(IController controller){
+        Dialog dialog = generateDialog();
         
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
@@ -229,5 +249,65 @@ public final class DrawWindow implements IWindow {
         dialog.getDialogPane().setContent(gridPane);
         dialog.show();
         return dialog;
+    }
+    
+    private Dialog createHyperlinkDialog(IController controller){
+        Dialog dialog = generateDialog();
+        
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        
+        Label lblCombo = new Label("Choose the vertices you connect with an Hyperlink");
+        Label lblHyperlink = new Label("Add the text you want to appear");
+        TextField txtHyperlink = new TextField();
+        
+        ComboBox verticesA = new ComboBox();
+        ComboBox verticesB = new ComboBox();
+        
+        fillCombo(verticesA);
+        fillCombo(verticesB);
+        
+        gridPane.add(lblCombo, 0, 0, 2, 1);
+        gridPane.add(lblHyperlink, 0, 1);
+        gridPane.add(txtHyperlink, 1, 1);
+
+        
+        gridPane.add(verticesA, 0, 2);
+        gridPane.add(verticesB, 1, 2);
+        
+        Button ok = new Button("OK");
+        Button cancel = new Button("Cancel");
+        ok.setPrefWidth(100);
+        cancel.setPrefWidth(100);
+        
+        gridPane.add(ok, 2, 0);
+        gridPane.add(cancel, 2, 1);
+        
+        ok.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                /*boolean success = ((DrawController)controller).createHyperlink(verticesA.getValue());
+                if(success) dialog.close();*/
+            }
+        });
+        
+        cancel.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                dialog.close();
+            }
+        });
+        
+        dialog.getDialogPane().setContent(gridPane);
+        dialog.show();        
+        return dialog;
+    }
+    
+    private void fillCombo(ComboBox combobox) {
+        List<Vertex<Page>> vertices = (List<Vertex<Page>>) website.vertices();
+        for (Vertex<Page> page : vertices) {
+            combobox.getItems().add(page.element().getFilename());
+        }        
     }
 }

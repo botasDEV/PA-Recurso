@@ -44,4 +44,14 @@ public class DrawController implements IController{
             return false;
         }
     }
+    
+    
+    public boolean createHyperlink(String filenameA, String filenameB) {
+                
+        try {
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
 }
