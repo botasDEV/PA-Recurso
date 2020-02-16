@@ -6,7 +6,12 @@
 package views;
 
 import adapter.GraphEdgleListAdapter;
+import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
+import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties;
+import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
+import com.brunomnsilva.smartgraph.graphview.SmartRandomPlacementStrategy;
+import com.brunomnsilva.smartgraph.graphview.SmartStylableNode;
 import controllers.DrawController;
 import controllers.IController;
 import digraph.Vertex;
@@ -74,7 +79,11 @@ public final class DrawWindow implements IWindow {
 
     @Override
     public Pane initComponents() {
-        graphPanel = new SmartGraphPanel<>(graphEdgleListAdapter);
+        SmartPlacementStrategy strategy = new SmartRandomPlacementStrategy();
+        graphPanel = new SmartGraphPanel<>(graphEdgleListAdapter, strategy);
+        if (graphEdgleListAdapter.numVertices() > 0) {
+            graphPanel.getStylableVertex("index.html").setStyle("-fx-fill: cyan; -fx-stroke: blue; -fx-stroke-width: 3; -fx-radius: 5;");
+        }        
         
         Pane vBox = new Pane();
         vBox.setPadding(new Insets(20, 50, 10, 0));
@@ -161,10 +170,20 @@ public final class DrawWindow implements IWindow {
 
     @Override
     public void update(Observable o, Object arg) {
-        graphEdgleListAdapter.setWebsite((Website)arg);
-        graphEdgleListAdapter.insertVertices();
-        graphEdgleListAdapter.insertEdges();
-        graphPanel.update();
+        Runnable r;
+        r = () -> {
+            graphEdgleListAdapter.setWebsite((Website)arg);
+            com.brunomnsilva.smartgraph.graph.Vertex<String> insertedVertex = graphEdgleListAdapter.insertVertex();
+            graphEdgleListAdapter.insertEdges();
+            graphPanel.updateAndWait();
+            
+            SmartStylableNode stylableVertex = graphPanel.getStylableVertex(insertedVertex);
+            if (stylableVertex != null) {
+                stylableVertex.setStyle("-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;");
+            }
+        };
+        
+        new Thread(r).start();
     }
 
     @Override
@@ -179,14 +198,14 @@ public final class DrawWindow implements IWindow {
         createPage.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                Dialog dialog = createPageDialog(controller);
+                createPageDialog(controller);
             }
         });
         
         createHyperlink.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                Dialog dialog = createHyperlinkDialog(controller);
+                createHyperlinkDialog(controller);
             }
         });
     }
@@ -201,7 +220,7 @@ public final class DrawWindow implements IWindow {
         return dialog;
     }
     
-    private Dialog createPageDialog(IController controller){
+    private void createPageDialog(IController controller){
         Dialog dialog = generateDialog();
         
         GridPane gridPane = new GridPane();
@@ -248,10 +267,9 @@ public final class DrawWindow implements IWindow {
         
         dialog.getDialogPane().setContent(gridPane);
         dialog.show();
-        return dialog;
     }
     
-    private Dialog createHyperlinkDialog(IController controller){
+    private void createHyperlinkDialog(IController controller){
         Dialog dialog = generateDialog();
         
         GridPane gridPane = new GridPane();
@@ -304,7 +322,6 @@ public final class DrawWindow implements IWindow {
         
         dialog.getDialogPane().setContent(gridPane);
         dialog.show();        
-        return dialog;
     }
     
     private void fillCombo(ComboBox combobox) {
