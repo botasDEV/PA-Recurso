@@ -6,15 +6,8 @@
 package controllers;
 
 import factories.WebsiteMakerFactory;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.Scene;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
@@ -71,9 +64,9 @@ public class MainController implements IController{
         } while (newWebsite != null && dao.alreadyExists(newWebsite.getName()));
         
         if (newWebsite != null) {
-            createDummyWebsite(newWebsite);
-            System.out.println(newWebsite);
-
+            Page indexPage = new Page();
+            newWebsite.insertVertex(indexPage);
+            
             DrawWindow drawWindow = (DrawWindow)WebsiteMakerFactory.create(newWebsite, "create");
             Scene scene = drawWindow.getScene();
             stage.setScene(scene);
@@ -81,20 +74,5 @@ public class MainController implements IController{
 
             drawWindow.getPanel().init();
         }
-    }    
-    
-    
-    private void createDummyWebsite(Website website) {
-        String pageName = "Index";
-        String filename = "index.html";
-        Page newPage = new Page(pageName, "index.html");
-        newPage.setContent("<html>"
-                + "<head><title>"
-                + pageName
-                + "</title></head>"
-                + "<body></body>"                        
-                + "</html>");
-        newPage.setFolder(dao.getBasePath() + website.getName() + "/" + filename);
-        website.insertVertex(newPage);
     }
 }

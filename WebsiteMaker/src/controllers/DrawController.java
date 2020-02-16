@@ -6,6 +6,7 @@
 package controllers;
 
 import digraph.Vertex;
+import java.net.URL;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import models.Hyperlink;
@@ -33,16 +34,35 @@ public class DrawController implements IController{
     }
     
     public boolean createPage(TextField txtFilename, TextField txtFolder, TextArea txtContent) {
-        String filename = txtFilename.getText().contains(".html") ? txtFilename.getText() : txtFilename.getText().concat(".html");
+        String filename = txtFilename.getText();
+        filename = isURL(filename) || filename.contains(".html") ? 
+                txtFilename.getText() : txtFilename.getText().concat(".html");
+        
         String title = txtFilename.getText();
         String folder = txtFolder.getText();
         String content = txtContent.getText();
         
         try {
-            Page newPage = new Page(title, filename, folder, content);
+            Page newPage = new Page(title, filename, folder, content, isURL(filename));
+            
             model.insertVertex(newPage);
             return true;
         } catch(Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Checks if the Vertex is an external URL
+     * 
+     * @param filename
+     * @return true|false
+     */
+    public boolean isURL(String filename){
+        try {
+            URL url = new URL(filename);
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
@@ -61,7 +81,7 @@ public class DrawController implements IController{
         }
     }
     
-    private Vertex<Page> findPage(String filename){
+    public Vertex<Page> findPage(String filename){
         for(Vertex<Page> vertex : model.vertices()){
             if(vertex.element().getFilename().equals(filename)) {
                 return vertex;

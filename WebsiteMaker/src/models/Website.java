@@ -141,19 +141,18 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
     }
 
     @Override
-    public Edge<Hyperlink, Page> insertEdge(Vertex<Page> u, Vertex<Page> v, Hyperlink edgeElement) throws InvalidVertexException, InvalidEdgeException {
-        checkVertex(v);
-        checkVertex(u);
-        List<Edge<Hyperlink, Page>> edges  = adjacenciesMap.get(v);
+    public Edge<Hyperlink, Page> insertEdge(Vertex<Page> vertexA, Vertex<Page> vertexB, Hyperlink edgeElement) throws InvalidVertexException, InvalidEdgeException {
+        checkVertex(vertexA);
+        checkVertex(vertexB);
+        List<Edge<Hyperlink, Page>> edges  = adjacenciesMap.get(vertexA);
         for (Edge<Hyperlink, Page> edge : edges) {
-            if(edge.vertices()[0].equals(v) && edge.vertices()[1].equals(u)
-            || edge.vertices()[0].equals(u) && edge.vertices()[1].equals(v)) {
+            if(edge.vertices()[0].equals(vertexA) && edge.vertices()[1].equals(vertexB)) {
                 throw new InvalidEdgeException();
             }
         }
-        MyEdge newEdge = new MyEdge(edgeElement, v, u);
-        adjacenciesMap.get(v).add(newEdge);
-        adjacenciesMap.get(u).add(newEdge);
+        MyEdge newEdge = new MyEdge(edgeElement, vertexA, vertexB);
+        adjacenciesMap.get(vertexA).add(newEdge);
+        adjacenciesMap.get(vertexB).add(newEdge);
         
         setChanged();
         notifyObservers(this);

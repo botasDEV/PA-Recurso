@@ -20,9 +20,6 @@ import models.Website;
  */
 public class GraphEdgleListAdapter extends GraphEdgeList<String, String>{
     private Website website;
-    private final String rootStyling = "-fx-fill: gold; -fx-stroke: brown;";
-    private final String nodeStyling = "-fx-fill: orange;";
-    
 
     public GraphEdgleListAdapter(Website website) {
         this.website = website;

@@ -14,16 +14,32 @@ public class Page {
     private String content;
     private String filename;
     private String folder;
+    private boolean isExternal;
 
-    public Page(String title, String filename) {
-        this(title, filename, "", "");
+    public Page() {
+        this("Index", "index.html", "", "", false);
     }
     
-    public Page(String title, String filename, String folder, String content) {
-        this.title = title;
+    public Page(String title, String filename, boolean isExternal) {
+        this(title, filename, "", "", isExternal);
+    }
+    
+    public Page(String title, String filename, String folder, String content, boolean isExternal) {
+        this.isExternal = isExternal;
+        if (!this.isExternal) {
+            this.title = title;
+            this.content = content;
+            this.folder = folder;
+        }
         this.filename = filename;
-        this.content = content;
-        this.folder = folder;
+    }
+
+    public boolean isIsExternal() {
+        return isExternal;
+    }
+
+    public void setIsExternal(boolean isExternal) {
+        this.isExternal = isExternal;
     }
     
     public String getTitle() {

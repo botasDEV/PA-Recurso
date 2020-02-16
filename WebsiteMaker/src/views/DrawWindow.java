@@ -6,19 +6,19 @@
 package views;
 
 import adapter.GraphEdgleListAdapter;
-import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
-import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties;
+import com.brunomnsilva.smartgraph.graphview.SmartGraphVertexNode;
 import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartRandomPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartStylableNode;
 import controllers.DrawController;
 import controllers.IController;
 import digraph.Vertex;
-import java.util.ArrayList;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -179,11 +179,36 @@ public final class DrawWindow implements IWindow {
             
             SmartStylableNode stylableVertex = graphPanel.getStylableVertex(insertedVertex);
             if (stylableVertex != null) {
-                stylableVertex.setStyle("-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;");
+                String vertexStyle = "-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;";
+                if (isURL(insertedVertex.element())) {
+                    vertexStyle = "-fx-fill: gray; -fx-stroke: darkgrey; -fx-stroke-width: 3;";
+                } 
+                stylableVertex.setStyle(vertexStyle);
             }
+            
+            updateStats();
         };
         
         new Thread(r).start();
+    }
+    
+    private void updateStats(){
+        
+    }
+    
+    /**
+     * Checks if the Vertex is an external URL
+     * 
+     * @param filename
+     * @return true|false
+     */
+    public boolean isURL(String filename){
+        try {
+            URL url = new URL(filename);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
@@ -198,7 +223,7 @@ public final class DrawWindow implements IWindow {
         createPage.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                createPageDialog(controller);
+                createPageDialog(controller, new HashMap<>());
             }
         });
         
@@ -207,6 +232,22 @@ public final class DrawWindow implements IWindow {
             public void handle(Event event) {
                 createHyperlinkDialog(controller);
             }
+        });
+        
+        graphPanel.setVertexDoubleClickAction(vertex -> {
+            
+            Map<String,String> attrs = new HashMap<>();
+            String element = ((SmartGraphVertexNode<String>)vertex).getUnderlyingVertex().element();
+            Vertex<Page> v = ((DrawController)controller).findPage(element);
+            
+            attrs.put("filename", v.element().getFilename());
+            attrs.put("folder", v.element().getFolder());
+            attrs.put("content", v.element().getContent());
+            createPageDialog(controller, attrs);
+        });
+        
+        graphPanel.setEdgeDoubleClickAction(edge -> {
+            System.out.println(edge.toString());
         });
     }
 
@@ -220,16 +261,33 @@ public final class DrawWindow implements IWindow {
         return dialog;
     }
     
-    private void createPageDialog(IController controller){
-        Dialog dialog = generateDialog();
+    private void createPageDialog(IController controller, Map<String, String> attrs){
+        boolean isExternal = false;
         
+        Dialog dialog = generateDialog();
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         
+        
         TextField txtFilename = new TextField();
         TextArea txtContent = new TextArea();
         TextField txtFolder = new TextField();
+        
+        if (attrs.containsKey("filename")) {
+            String filename = attrs.get("filename");
+            txtFilename.setText(filename);
+            
+            isExternal = ((DrawController)controller).isURL(filename);
+        }
+        
+        if (isExternal) {
+            txtContent.setDisable(isExternal);
+            txtFolder.setDisable(isExternal);
+        } else {
+            if (attrs.containsKey("content")) txtContent.setText(attrs.get("content"));
+            if (attrs.containsKey("folder")) txtFolder.setText(attrs.get("folder"));
+        }
         
         Label lblFilename = new Label("Filename");
         Label lblContent = new Label("Content");
