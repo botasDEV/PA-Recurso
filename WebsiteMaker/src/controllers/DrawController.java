@@ -5,6 +5,9 @@
  */
 package controllers;
 
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import models.Page;
 import models.Website;
 import views.IWindow;
 import websitemaker.dao.WebsiteFileDAO;
@@ -27,5 +30,18 @@ public class DrawController implements IController{
 
     }
     
-    
+    public boolean createPage(TextField txtFilename, TextField txtFolder, TextArea txtContent) {
+        String filename = txtFilename.getText().contains(".html") ? txtFilename.getText() : txtFilename.getText().concat(".html");
+        String title = txtFilename.getText();
+        String folder = txtFolder.getText();
+        String content = txtContent.getText();
+        
+        try {
+            Page newPage = new Page(title, filename, folder, content);
+            model.insertVertex(newPage);
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
 }

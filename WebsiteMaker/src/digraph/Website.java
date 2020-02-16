@@ -3,14 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package models;
+package digraph;
 
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
-import digraph.InvalidEdgeException;
-import digraph.InvalidVertexException;
-import digraph.MyEdge;
-import digraph.MyVertex;
-import digraph.Vertex;
 import digraph.interfaces.Edge;
 import digraph.interfaces.Graph;
 import java.util.ArrayList;
@@ -19,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import models.Hyperlink;
+import models.Page;
 
 /**
  *
@@ -133,9 +130,6 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         
         MyVertex newVertex = new MyVertex(vElement);
         adjacenciesMap.put(newVertex, null);
-        
-        setChanged();
-        notifyObservers(this);
         
         return newVertex;
     }
@@ -253,7 +247,6 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
             Vertex<Page> vertex2 = edge.vertices()[1];
             graphEdgeList.insertEdge(vertex1.element(), vertex2.element(), edge.element());
         }
-        
         
         return graphEdgeList;
     }

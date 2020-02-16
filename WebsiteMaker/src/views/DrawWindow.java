@@ -5,16 +5,22 @@
  */
 package views;
 
-import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy;
+import adapter.GraphEdgleListAdapter;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
-import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
+import controllers.DrawController;
 import controllers.IController;
 import java.util.Observable;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -24,8 +30,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import models.Hyperlink;
-import models.Page;
 import models.Website;
 
 /**
@@ -37,10 +41,11 @@ public final class DrawWindow implements IWindow {
     private Website website;
     
     private Scene scene;
-    private SmartGraphPanel<Page, Hyperlink> graphPanel;
+    private GraphEdgleListAdapter graphEdgleListAdapter;
+    private SmartGraphPanel graphPanel;
     private int titleX = 5;
-    private int btnX1 = 15;
-    private int btnX2 = 100;
+    private int btnX1 = 10;
+    private int btnX2 = 95;
     private Button createPage;
     private Button deletePage;
     private Button createHyperlink;
@@ -50,8 +55,9 @@ public final class DrawWindow implements IWindow {
     
     public DrawWindow(Website website) {
         this.website = website;
+        graphEdgleListAdapter = new GraphEdgleListAdapter(website);
         Pane root = initComponents();
-        scene = new Scene(root, 800, 600);
+        scene = new Scene(root, 1200, 900);
         root.setStyle("-fx-font: 12px \"Courier New\"");
     }
     
@@ -62,10 +68,7 @@ public final class DrawWindow implements IWindow {
 
     @Override
     public Pane initComponents() {
-        
-        SmartPlacementStrategy strategy = new SmartCircularSortedPlacementStrategy();
-        graphPanel = new SmartGraphPanel<>(website.toGraphEdgeList(), strategy);
-        
+        graphPanel = new SmartGraphPanel<>(graphEdgleListAdapter);
         
         Pane vBox = new Pane();
         vBox.setPadding(new Insets(20, 50, 10, 0));
@@ -104,19 +107,18 @@ public final class DrawWindow implements IWindow {
         
         Text txt3 = new Text("Website");
         txt3.setLayoutX(titleX);
-        txt3.setLayoutY(970);
+        txt3.setLayoutY(770);
         txt3.setFont(Font.font("Courier New", FontWeight.EXTRA_BOLD, 25.0));
         
         saveWebsite = new Button();
         saveWebsite.setGraphic(new ImageView("websitemaker/resources/images/save.png"));
         saveWebsite.setLayoutX(btnX1);
-        saveWebsite.setLayoutY(985);
+        saveWebsite.setLayoutY(785);
 
         exitDraw = new Button();
         exitDraw.setGraphic(new ImageView("websitemaker/resources/images/cancel.png"));
         exitDraw.setLayoutX(btnX2);
-        exitDraw.setLayoutY(985);
-        
+        exitDraw.setLayoutY(785);
         
         vBox.getChildren().add(txt1);
         vBox.getChildren().add(createPage);
@@ -136,9 +138,9 @@ public final class DrawWindow implements IWindow {
         gridPane.getRowConstraints().addAll(rowConstraints1);
         
         ColumnConstraints columnConstraints1 = new ColumnConstraints();
-        columnConstraints1.setPercentWidth(90);
+        columnConstraints1.setPercentWidth(85);
         ColumnConstraints columnConstraints2 = new ColumnConstraints();
-        columnConstraints2.setPercentWidth(10);
+        columnConstraints2.setPercentWidth(15);
         gridPane.getColumnConstraints().addAll(columnConstraints1, columnConstraints2);
         
         gridPane.add(graphPanel, 0, 0);
@@ -153,7 +155,10 @@ public final class DrawWindow implements IWindow {
 
     @Override
     public void update(Observable o, Object arg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        graphEdgleListAdapter.setWebsite((Website)arg);
+        graphEdgleListAdapter.insertVertices();
+        graphEdgleListAdapter.insertEdges();
+        graphPanel.update();
     }
 
     @Override
@@ -161,10 +166,68 @@ public final class DrawWindow implements IWindow {
         exitDraw.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                stage.close();
+                ((Stage) scene.getWindow()).close();
             }
         });
+        
+        createPage.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Dialog dialog = createPageDialog(controller);
+            }
+        });
+    }    
+    private Dialog createPageDialog(IController controller){
+        Dialog dialog = new Dialog();
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.managedProperty().bind(closeButton.visibleProperty());
+        closeButton.setVisible(false);
+        
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        
+        TextField txtFilename = new TextField();
+        TextArea txtContent = new TextArea();
+        TextField txtFolder = new TextField();
+        
+        Label lblFilename = new Label("Filename");
+        Label lblContent = new Label("Content");
+        Label lblFolder = new Label("Folder");
+        
+        gridPane.add(lblFilename, 0, 0);
+        gridPane.add(lblFolder, 0, 1);
+        gridPane.add(lblContent, 0, 2);
+        gridPane.add(txtFilename, 1, 0);
+        gridPane.add(txtFolder, 1, 1);
+        gridPane.add(txtContent, 1, 2);     
+        
+        Button ok = new Button("OK");
+        Button cancel = new Button("Cancel");
+        ok.setPrefWidth(100);
+        cancel.setPrefWidth(100);
+        
+        gridPane.add(ok, 2, 0);
+        gridPane.add(cancel, 2, 1);
+        
+        ok.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                boolean success = ((DrawController)controller).createPage(txtFilename, txtFolder, txtContent);
+                if(success) dialog.close();
+            }
+        });
+        
+        cancel.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                dialog.close();
+            }
+        });
+        
+        dialog.getDialogPane().setContent(gridPane);
+        dialog.show();
+        return dialog;
     }
-    
 }

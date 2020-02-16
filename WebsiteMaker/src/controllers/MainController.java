@@ -51,9 +51,7 @@ public class MainController implements IController{
         
     public void createWebsite() {
         Stage stage = new Stage(StageStyle.TRANSPARENT);
-        stage.setMaximized(true);
-        stage.setTitle("Create Website");
-        
+        stage.setTitle("Create Website");        
         
         Optional<String> result = null;
         Website newWebsite = null;
