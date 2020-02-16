@@ -7,6 +7,7 @@ package adapter;
 
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import digraph.Vertex;
+import digraph.interfaces.Edge;
 import java.util.List;
 import models.Hyperlink;
 import models.Page;
@@ -48,6 +49,17 @@ public class GraphEdgleListAdapter extends GraphEdgeList<Page, Hyperlink>{
     }
     
     public void insertEdges() {
+        for(Edge<Hyperlink, Page> edge : website.edges()) {
+            boolean exists = false;
+            for (com.brunomnsilva.smartgraph.graph.Edge<Hyperlink, Page> showEdge : super.edges()) {
+                if(showEdge.element().equals(edge.element())){
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if(!exists) super.insertEdge(edge.vertices()[0].element(), edge.vertices()[1].element(), edge.element());
+        }
         
     }
 }

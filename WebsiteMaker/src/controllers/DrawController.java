@@ -5,8 +5,10 @@
  */
 package controllers;
 
+import digraph.Vertex;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import models.Hyperlink;
 import models.Page;
 import models.Website;
 import views.IWindow;
@@ -46,12 +48,26 @@ public class DrawController implements IController{
     }
     
     
-    public boolean createHyperlink(String filenameA, String filenameB) {
+    public boolean createHyperlink(String filenameA, String filenameB, String hyperlinkText) {
                 
         try {
+            Hyperlink newHyperlink = new Hyperlink(hyperlinkText);
+            Vertex<Page> vertexA = findPage(filenameA);
+            Vertex<Page> vertexB = findPage(filenameB);
+            model.insertEdge(vertexA, vertexB, newHyperlink);
             return true;
         } catch(Exception e) {
             return false;
         }
+    }
+    
+    private Vertex<Page> findPage(String filename){
+        for(Vertex<Page> vertex : model.vertices()){
+            if(vertex.element().getFilename().equals(filename)) {
+                return vertex;
+            }
+        }
+        
+        return null;
     }
 }

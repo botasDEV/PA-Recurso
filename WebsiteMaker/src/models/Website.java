@@ -132,7 +132,7 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         }
         
         MyVertex newVertex = new MyVertex(vElement);
-        adjacenciesMap.put(newVertex, null);
+        adjacenciesMap.put(newVertex, new ArrayList<>());
         
         setChanged();
         notifyObservers(this);
@@ -154,6 +154,9 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         MyEdge newEdge = new MyEdge(edgeElement, v, u);
         adjacenciesMap.get(v).add(newEdge);
         adjacenciesMap.get(u).add(newEdge);
+        
+        setChanged();
+        notifyObservers(this);
         return newEdge;
     }
 

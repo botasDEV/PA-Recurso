@@ -287,8 +287,11 @@ public final class DrawWindow implements IWindow {
         ok.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                /*boolean success = ((DrawController)controller).createHyperlink(verticesA.getValue());
-                if(success) dialog.close();*/
+                if(verticesA.getValue() != null && verticesB.getValue() != null && !txtHyperlink.getText().equals("")) {
+                    boolean success = ((DrawController)controller)
+                            .createHyperlink(verticesA.getValue().toString(), verticesB.getValue().toString(), txtHyperlink.getText());
+                    if(success) dialog.close();
+                }
             }
         });
         
