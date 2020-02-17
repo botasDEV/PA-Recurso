@@ -83,13 +83,10 @@ public final class MainWindow implements IWindow {
         editBtn.setGraphic(new ImageView("websitemaker/resources/images/edit.png"));
         deleteBtn = new Button();
         deleteBtn.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
-        graphBtn = new Button();
-        graphBtn.setGraphic(new ImageView("websitemaker/resources/images/graph.png"));        
-        
+               
         gridPane.add(createBtn, 0, 0); 
         gridPane.add(editBtn, 0, 1);
         gridPane.add(deleteBtn, 1, 0);
-        gridPane.add(graphBtn, 1, 1);
         
         BorderPane borderPane = new BorderPane();
         borderPane.setLeft(leftVBox);

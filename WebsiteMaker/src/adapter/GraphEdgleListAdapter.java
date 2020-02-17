@@ -8,6 +8,7 @@ package adapter;
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import digraph.Vertex;
 import digraph.interfaces.Edge;
+import java.util.ArrayList;
 import java.util.List;
 import models.Hyperlink;
 import models.Page;
@@ -48,6 +49,23 @@ public class GraphEdgleListAdapter extends GraphEdgeList<String, String>{
         }
         
         return null;
+    }
+    
+    public List<com.brunomnsilva.smartgraph.graph.Vertex<String>> insertVertices() {
+        List<com.brunomnsilva.smartgraph.graph.Vertex<String>> vertices = new ArrayList<>();
+        for(Vertex<Page> vertex : website.vertices()) {
+            boolean exists = false;
+            for (com.brunomnsilva.smartgraph.graph.Vertex<String> showVertex : super.vertices()) {
+                if (showVertex.element().equals(vertex.element().getFilename())) {
+                    exists = true;
+                    break;
+                }
+            }
+            
+            if(!exists) vertices.add(super.insertVertex(vertex.element().getFilename()));
+        }
+        
+        return vertices;
     }
     
     public void insertEdges() {

@@ -13,14 +13,15 @@ import com.brunomnsilva.smartgraph.graphview.SmartRandomPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartStylableNode;
 import controllers.DrawController;
 import controllers.IController;
+import digraph.MyEdge;
 import digraph.Vertex;
 import digraph.interfaces.Edge;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Stack;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -48,6 +49,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import memento.WebsiteMemento;
 import models.Hyperlink;
 import models.Page;
 import models.Statistics;
@@ -74,6 +76,7 @@ public final class DrawWindow implements IWindow {
     private int axisFontSize = 10;
     private Button createPage;
     private Button deletePage;
+    private Button undo;
     private Button createHyperlink;
     private Button deleteHyperlink;
     private Button saveWebsite;
@@ -87,6 +90,7 @@ public final class DrawWindow implements IWindow {
     private ValueAxis hyperlinksValueAxis;
     private XYChart.Series references;
     private XYChart.Series hyperlinks;
+    private GridPane mainGridPane;
     
     public DrawWindow(Website website) {
         this.website = website;
@@ -128,6 +132,12 @@ public final class DrawWindow implements IWindow {
         deletePage.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
         deletePage.setLayoutX(btnX2);
         deletePage.setLayoutY(50);
+        
+        undo = new Button();
+        undo.setGraphic(new ImageView("websitemaker/resources/images/undo.png"));
+        undo.setLayoutX(btnX2 + 100);
+        undo.setLayoutY(50);
+        undo.setDisable(true);
         
         Text txt2 = new Text("Hyperlink");
         txt2.setLayoutX(titleX);
@@ -224,6 +234,7 @@ public final class DrawWindow implements IWindow {
         vBox.getChildren().add(txt1);
         vBox.getChildren().add(createPage);
         vBox.getChildren().add(deletePage);
+        vBox.getChildren().add(undo);
         vBox.getChildren().add(txt2);
         vBox.getChildren().add(createHyperlink);
         vBox.getChildren().add(deleteHyperlink);
@@ -236,23 +247,23 @@ public final class DrawWindow implements IWindow {
         vBox.getChildren().add(txtHyperlinks);
         vBox.getChildren().add(gridPaneCharts);
         
-        GridPane gridPane = new GridPane();
-        gridPane.setGridLinesVisible(true);
+        mainGridPane = new GridPane();
+        mainGridPane.setGridLinesVisible(true);
                 
         RowConstraints rowConstraints1 = new RowConstraints();
         rowConstraints1.setPercentHeight(100);
-        gridPane.getRowConstraints().addAll(rowConstraints1);
+        mainGridPane.getRowConstraints().addAll(rowConstraints1);
         
         ColumnConstraints columnConstraints1 = new ColumnConstraints();
         columnConstraints1.setPercentWidth(75);
         ColumnConstraints columnConstraints2 = new ColumnConstraints();
         columnConstraints2.setPercentWidth(25);
-        gridPane.getColumnConstraints().addAll(columnConstraints1, columnConstraints2);
+        mainGridPane.getColumnConstraints().addAll(columnConstraints1, columnConstraints2);
         
-        gridPane.add(graphPanel, 0, 0);
-        gridPane.add(vBox, 1, 0);
+        mainGridPane.add(graphPanel, 0, 0);
+        mainGridPane.add(vBox, 1, 0);
         
-        return gridPane;
+        return mainGridPane;
     }
     
     public SmartGraphPanel getPanel() {
@@ -262,34 +273,62 @@ public final class DrawWindow implements IWindow {
     @Override
     public void update(Observable o, Object arg) {
                 
+        if (arg instanceof Stack) updateUndo((Stack<WebsiteMemento>)arg);
         if (arg instanceof Website) updateWebsite((Website)arg);
         if (arg instanceof Statistics) updateStats((Statistics)arg); 
+        if (arg instanceof Map && ((Map<String, Map<Vertex<Page>, List<Edge<Hyperlink, Page>>>>)arg).containsKey("memento"))
+            reloadWebsite(((Map<String, Map<Vertex<Page>, List<Edge<Hyperlink, Page>>>>)arg).get("memento"));
         if (arg instanceof Map && ((HashMap<String, Vertex<Page>>)arg).containsKey("removedV"))
             removePage(((HashMap<String, Vertex<Page>>)arg).get("removedV"));
         if (arg instanceof Map && ((HashMap<String, Edge<Hyperlink, Page>>)arg).containsKey("removedE"))
             removeHyperlink(((HashMap<String,  Edge<Hyperlink, Page>>)arg).get("removedE"));
-        
+    }
+    
+    private void updateUndo(Stack<WebsiteMemento> arg) {
+        undo.setDisable(arg.isEmpty());
+    }
+    
+    private void reloadWebsite(Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacencies) {
+        for(com.brunomnsilva.smartgraph.graph.Edge<String,String> edge : graphEdgleListAdapter.edges()) {
+            removeHyperlink(edge.element());
+        }
+        for(com.brunomnsilva.smartgraph.graph.Vertex<String> vertex : graphEdgleListAdapter.vertices()) {
+            removePage(vertex.element());
+        }
+        website.setAdjacenciesMap(adjacencies);
+        updateWebsite(website);
     }
     
     private void removeHyperlink(Edge<Hyperlink, Page> edge){
+        removeHyperlink(edge.element().getText());
+    }
+
+    private void removeHyperlink(String element){
         Runnable r;
         r = () -> {
-            graphEdgleListAdapter.removeHyperlink(edge.element().getText());
+            graphEdgleListAdapter.removeHyperlink(element);
             graphPanel.updateAndWait();
         };
 
         new Thread(r).start();
-    }
-    
+    }    
     /**
      * Removed the Page from the visual
      * 
      * @param vertex 
      */
     private void removePage(Vertex<Page> vertex){
+        removePage(vertex.element().getFilename());
+    }
+    
+    /**
+     * 
+     * @param element 
+     */
+    private void removePage(String element){
         Runnable r;
         r = () -> {
-            graphEdgleListAdapter.removePage(vertex.element().getFilename());
+            graphEdgleListAdapter.removePage(element);
             graphPanel.updateAndWait();
         };
 
@@ -305,17 +344,19 @@ public final class DrawWindow implements IWindow {
         Runnable r;
         r = () -> {
             graphEdgleListAdapter.setWebsite(website);
-            com.brunomnsilva.smartgraph.graph.Vertex<String> insertedVertex = graphEdgleListAdapter.insertVertex();
+            List<com.brunomnsilva.smartgraph.graph.Vertex<String>> insertedVertices = graphEdgleListAdapter.insertVertices();
             graphEdgleListAdapter.insertEdges();
             graphPanel.updateAndWait();
 
-            SmartStylableNode stylableVertex = graphPanel.getStylableVertex(insertedVertex);
-            if (stylableVertex != null) {
-                String vertexStyle = "-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;";
-                if (isURL(insertedVertex.element())) {
-                    vertexStyle = "-fx-fill: gray; -fx-stroke: darkgrey; -fx-stroke-width: 3;";
-                } 
-                stylableVertex.setStyle(vertexStyle);
+            for (com.brunomnsilva.smartgraph.graph.Vertex<String> insertedVertex : insertedVertices) {
+                SmartStylableNode stylableVertex = graphPanel.getStylableVertex(insertedVertex);
+                if (stylableVertex != null) {
+                    String vertexStyle = "-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;";
+                    if (isURL(insertedVertex.element())) {
+                        vertexStyle = "-fx-fill: gray; -fx-stroke: darkgrey; -fx-stroke-width: 3;";
+                    } 
+                    stylableVertex.setStyle(vertexStyle);
+                }
             }
         };
 
@@ -387,6 +428,13 @@ public final class DrawWindow implements IWindow {
             }
         });
         
+        undo.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                undo(controller);
+            }
+        });
+        
         graphPanel.setVertexDoubleClickAction(vertex -> {
             
             Map<String,String> attrs = new HashMap<>();
@@ -402,8 +450,15 @@ public final class DrawWindow implements IWindow {
         graphPanel.setEdgeDoubleClickAction(edge -> {
             System.out.println(edge.toString());
         });
+        
+        
     }
 
+    private void undo(IController controller){
+        ((DrawController)controller).undo();
+    }
+    
+    
     private Dialog generateDialog(){
         Dialog dialog = new Dialog();
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);

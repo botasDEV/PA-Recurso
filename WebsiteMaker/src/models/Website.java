@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import memento.WebsiteMemento;
 
 /**
  *
@@ -26,10 +27,18 @@ import java.util.Observable;
  */
 public class Website extends Observable implements Graph<Page, Hyperlink>{
     private String name;
-    private Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap; // Works as Vertex
+    private Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap;
 
     public Website() {
         adjacenciesMap = new HashMap<>();
+    }
+    
+    public Website(Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap) {
+        this.adjacenciesMap = adjacenciesMap;
+    }
+
+    public void setAdjacenciesMap(Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> adjacenciesMap) {
+        this.adjacenciesMap = adjacenciesMap;
     }
     
     public Website(String name) {
@@ -59,6 +68,25 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         return edges().size();
     }
 
+    /**
+     * Creates the Memento that will save the state of the Website
+     * 
+     * @return WebsiteMemento
+     */
+    public WebsiteMemento createMemento() {
+        return new WebsiteMemento(adjacenciesMap);
+    }
+    
+    public void setMemento(WebsiteMemento memento) {
+        this.adjacenciesMap = memento.getAdjacenciesMap();
+        
+        Map<String, Map<Vertex<Page>, List<Edge<Hyperlink, Page>>>> changes = new HashMap<>();
+        changes.put("memento", this.adjacenciesMap);
+        
+        setChanged();
+        notifyObservers(changes);
+    }
+    
     @Override
     public Collection<Vertex<Page>> vertices() {
         List<Vertex<Page>> pages = new ArrayList<>();

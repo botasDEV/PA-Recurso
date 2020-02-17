@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import memento.WebsiteCareTaker;
 import models.Hyperlink;
 import models.Page;
 import models.Statistics;
@@ -32,10 +31,12 @@ import websitemaker.dao.WebsiteFileDAO;
 public class DrawController implements IController{
     private Website modelWebsite;
     private Statistics modelStats;
+    private WebsiteCareTaker careTaker;
     private IWindow view;
     private WebsiteFileDAO dao;
 
     public DrawController(Website modelWebsite, Statistics modelStats, IWindow view, WebsiteFileDAO dao) {
+        careTaker = new WebsiteCareTaker();
         this.modelWebsite = modelWebsite;
         this.modelStats = modelStats;
         this.view = view;
@@ -43,6 +44,7 @@ public class DrawController implements IController{
         this.dao = dao;
         this.modelWebsite.addObserver(view);
         this.modelStats.addObserver(view);
+        this.careTaker.addObserver(view);
     }
     
     public boolean createPage(TextField txtFilename, TextField txtFolder, TextArea txtContent) {
@@ -55,6 +57,7 @@ public class DrawController implements IController{
         String content = txtContent.getText();
         
         try {
+            careTaker.save(modelWebsite);
             Page newPage = new Page(title, filename, folder, content, isURL(filename));
             
             modelWebsite.insertVertex(newPage);
@@ -83,6 +86,7 @@ public class DrawController implements IController{
     public boolean createHyperlink(String filenameA, String filenameB, String hyperlinkText) {
                 
         try {
+            careTaker.save(modelWebsite);
             Hyperlink newHyperlink = new Hyperlink(hyperlinkText);
             Vertex<Page> vertexA = findPage(filenameA);
             Vertex<Page> vertexB = findPage(filenameB);
@@ -190,6 +194,7 @@ public class DrawController implements IController{
     
     public boolean removePage(String filename) {
         try {
+            careTaker.save(modelWebsite);
             Vertex<Page> vertex = findPage(filename);
             modelWebsite.removeVertex(vertex);
             updateStats();
@@ -201,6 +206,7 @@ public class DrawController implements IController{
     
     public boolean removeHyperlink(String text) {
         try {
+            careTaker.save(modelWebsite);
             Edge<Hyperlink,Page> edge = findHyperlink(text);
             modelWebsite.removeEdge(edge);
             updateStats();
@@ -208,5 +214,9 @@ public class DrawController implements IController{
         } catch (Exception ex) {
             return false;
         }
+    }
+    
+    public void undo() {
+        careTaker.restore(modelWebsite);
     }
 }
