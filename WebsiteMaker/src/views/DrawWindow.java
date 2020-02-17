@@ -13,7 +13,6 @@ import com.brunomnsilva.smartgraph.graphview.SmartRandomPlacementStrategy;
 import com.brunomnsilva.smartgraph.graphview.SmartStylableNode;
 import controllers.DrawController;
 import controllers.IController;
-import digraph.MyEdge;
 import digraph.Vertex;
 import digraph.interfaces.Edge;
 import java.net.URL;
@@ -468,14 +467,13 @@ public final class DrawWindow implements IWindow {
             attrs.put("filename", v.element().getFilename());
             attrs.put("folder", v.element().getFolder());
             attrs.put("content", v.element().getContent());
+            attrs.put("isRoot", String.valueOf(v.element().isRoot()));
             createPageDialog(controller, attrs);
         });
         
         graphPanel.setEdgeDoubleClickAction(edge -> {
             System.out.println(edge.toString());
         });
-        
-        
     }
 
     private void undo(IController controller){
@@ -495,12 +493,12 @@ public final class DrawWindow implements IWindow {
     
     private void createPageDialog(IController controller, Map<String, String> attrs){
         boolean isExternal = false;
+        boolean isRoot = Boolean.valueOf(attrs.get("isRoot"));
         
         Dialog dialog = generateDialog();
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
-        
         
         TextField txtFilename = new TextField();
         TextArea txtContent = new TextArea();
@@ -509,6 +507,7 @@ public final class DrawWindow implements IWindow {
         if (attrs.containsKey("filename")) {
             String filename = attrs.get("filename");
             txtFilename.setText(filename);
+            txtFilename.setDisable(isRoot);
             
             isExternal = ((DrawController)controller).isURL(filename);
         }
