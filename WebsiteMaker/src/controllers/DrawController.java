@@ -9,6 +9,7 @@ import digraph.Vertex;
 import digraph.interfaces.Edge;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +146,8 @@ public class DrawController implements IController{
         modelStats.setExternals(externals);
         modelStats.setHyperlinks(hyperlinks);
         modelStats.setHyperlinksValues(getHyperlinksValues());
+        modelStats.setReferencedValues(getReferencedValues());
+        modelStats.notifyObjects();
     }
     
     /**
@@ -185,6 +188,46 @@ public class DrawController implements IController{
         return series;
     }
     
+    /**
+     * Retrives the Data for the Chart that refers to the hyperlinks
+     * 
+     * @return XYChart.Series
+     */
+    private XYChart.Series<String,Number> getReferencedValues() {
+        XYChart.Series<String,Number> series = new XYChart.Series<>();
+        List<XYChart.Data<String,Number>> graphValues = new ArrayList<>();
+        Map<String, Integer> newMap = new HashMap<>();
+        
+        for(Vertex<Page> vertex : modelWebsite.getAdjacenciesMap().keySet()) {
+            newMap.put(vertex.element().getFilename(), 0);
+        }
+        
+        for (Edge<Hyperlink, Page> edge : modelWebsite.edges()) {
+            Vertex<Page> outbound = edge.vertices()[1];
+            String filename = outbound.element().getFilename();
+            int numAppears = newMap.get(filename);
+            numAppears++;
+            newMap.put(filename, numAppears);
+        }
+        
+        while(newMap.size() > 5) {
+            String remove = "";
+            int min = Integer.MAX_VALUE;
+            for(Map.Entry<String, Integer> entry : newMap.entrySet()) {
+                int value = entry.getValue();
+                if (value < min) {
+                    min = value;
+                    remove = entry.getKey();
+                }
+            }
+            if (!remove.isEmpty()) newMap.remove(remove);
+        }
+        
+        feedGraphValues(graphValues, newMap);
+        series.getData().addAll(graphValues);
+        return series;
+    }
+    
     private void feedGraphValues(List<XYChart.Data<String,Number>> graphValues, Map<String, Integer> newMap) {
         for(Map.Entry<String, Integer> entry : newMap.entrySet()) {
             graphValues.add(new XYChart.Data(entry.getKey(), entry.getValue()));
@@ -218,5 +261,6 @@ public class DrawController implements IController{
     
     public void undo() {
         careTaker.restore(modelWebsite);
+        updateStats();
     }
 }

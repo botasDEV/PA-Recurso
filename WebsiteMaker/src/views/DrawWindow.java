@@ -225,7 +225,8 @@ public final class DrawWindow implements IWindow {
         saveWebsite.setGraphic(new ImageView("websitemaker/resources/images/save.png"));
         saveWebsite.setLayoutX(btnX1);
         saveWebsite.setLayoutY(915);
-
+        saveWebsite.setVisible(false);
+                
         exitDraw = new Button();
         exitDraw.setGraphic(new ImageView("websitemaker/resources/images/cancel.png"));
         exitDraw.setLayoutX(btnX2);
@@ -343,6 +344,8 @@ public final class DrawWindow implements IWindow {
     private void updateWebsite(Website website){
         Runnable r;
         r = () -> {
+            Vertex<Page> root = getRootVertex(website);
+            
             graphEdgleListAdapter.setWebsite(website);
             List<com.brunomnsilva.smartgraph.graph.Vertex<String>> insertedVertices = graphEdgleListAdapter.insertVertices();
             graphEdgleListAdapter.insertEdges();
@@ -354,13 +357,31 @@ public final class DrawWindow implements IWindow {
                     String vertexStyle = "-fx-fill: orange; -fx-stroke: red; -fx-stroke-width: 3;";
                     if (isURL(insertedVertex.element())) {
                         vertexStyle = "-fx-fill: gray; -fx-stroke: darkgrey; -fx-stroke-width: 3;";
-                    } 
+                    }
+                    if (root.element().getFilename().equals(insertedVertex.element())) {
+                        vertexStyle = "-fx-fill: cyan; -fx-stroke: blue; -fx-stroke-width: 3; -fx-radius: 5;";
+                    }
                     stylableVertex.setStyle(vertexStyle);
                 }
             }
         };
 
         new Thread(r).start();
+    }
+    
+    /**
+     * Gets the websites root vertice
+     * 
+     * @param website
+     * @return 
+     */
+    private Vertex<Page> getRootVertex(Website website) {
+        for (Vertex<Page> vertex : website.vertices()) {
+            if (vertex.element().isRoot()) {
+                return vertex;
+            }
+        }
+        return null;
     }
     
     /**
@@ -374,6 +395,9 @@ public final class DrawWindow implements IWindow {
         txtHyperlinks.setText("NO. Hyperlinks: ".concat(String.valueOf(stats.getHyperlinks())));
         chartHyperlinks.getData().clear();
         chartHyperlinks.getData().add(stats.getHyperlinksValues());
+        
+        chartRefereced.getData().clear();
+        chartRefereced.getData().add(stats.getReferencedValues());
     }
     
     /**

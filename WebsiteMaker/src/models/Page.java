@@ -15,9 +15,11 @@ public class Page {
     private String filename;
     private String folder;
     private boolean isExternal;
+    private boolean isRoot;
 
     public Page() {
         this("Index", "index.html", "", "", false);
+        isRoot = true;
     }
     
     public Page(String title, String filename, boolean isExternal) {
@@ -32,6 +34,11 @@ public class Page {
             this.folder = folder;
         }
         this.filename = filename;
+        isRoot = false;
+    }
+
+    public boolean isRoot() {
+        return isRoot;
     }
 
     public boolean isExternal() {

@@ -40,7 +40,6 @@ public class Statistics extends Observable {
 
     public void setHyperlinksValues(XYChart.Series<String,Number> hyperlinksValues) {
         this.hyperlinksValues = hyperlinksValues;
-        notifyObjects();
     }
 
     public XYChart.Series<String,Number> getReferencedValues() {
@@ -49,7 +48,6 @@ public class Statistics extends Observable {
 
     public void setReferencedValues(XYChart.Series<String,Number> referencedValues) {
         this.referencedValues = referencedValues;
-        notifyObjects();
     }
 
     public int getInternals() {
@@ -58,7 +56,6 @@ public class Statistics extends Observable {
 
     public void setInternals(int internals) {
         this.internals = internals;
-        notifyObjects();
     }
 
     public int getExternals() {
@@ -67,7 +64,6 @@ public class Statistics extends Observable {
 
     public void setExternals(int externals) {
         this.externals = externals;
-        notifyObjects();
     }
 
     public int getHyperlinks() {
@@ -76,10 +72,9 @@ public class Statistics extends Observable {
 
     public void setHyperlinks(int hyperlinks) {
         this.hyperlinks = hyperlinks;
-        notifyObjects();
     }
     
-    private void notifyObjects() {
+    public void notifyObjects() {
         setChanged();
         notifyObservers(this);
     }

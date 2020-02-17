@@ -81,6 +81,7 @@ public final class MainWindow implements IWindow {
         createBtn.setGraphic(new ImageView("websitemaker/resources/images/add.png"));
         editBtn = new Button();
         editBtn.setGraphic(new ImageView("websitemaker/resources/images/edit.png"));
+        editBtn.setVisible(false);
         deleteBtn = new Button();
         deleteBtn.setGraphic(new ImageView("websitemaker/resources/images/delete.png"));
                
