@@ -37,6 +37,10 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         this.name = name;
     }
     
+    public Map<Vertex<Page>, List<Edge<Hyperlink, Page>>> getAdjacenciesMap() {
+        return adjacenciesMap;
+    }
+    
     public String getName() {
         return name;
     }
@@ -183,6 +187,12 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
         MyVertex vertex = checkVertex(v);
         if(adjacenciesMap.get(vertex).size() > 0) throw new InvalidVertexException();
         adjacenciesMap.remove(vertex);
+        
+        Map<String, Vertex<Page>> pageRemoved = new HashMap<>();
+        pageRemoved.put("removedV", v);
+        
+        setChanged();
+        notifyObservers(pageRemoved);
         return vertex.element();
     }
 
@@ -196,6 +206,12 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
             }
         });
         
+        
+        Map<String, Edge<Hyperlink, Page>> hyperlinkRemoved = new HashMap<>();
+        hyperlinkRemoved.put("removedE", e);
+        
+        setChanged();
+        notifyObservers(hyperlinkRemoved);
         return e.element();
     }
 
@@ -221,9 +237,7 @@ public class Website extends Observable implements Graph<Page, Hyperlink>{
     // CHECKS
     private MyEdge checkEdge(Edge<Hyperlink, Page> edge) throws InvalidEdgeException {
         if (edge == null) throw new InvalidEdgeException();
-        for(List<Edge<Hyperlink, Page>> edges : adjacenciesMap.values()) {
-            if(!edges.contains(edge)) throw new InvalidEdgeException();
-        }
+        if (!edges().contains(edge)) throw new InvalidEdgeException();
 
         try {
             return (MyEdge) edge;

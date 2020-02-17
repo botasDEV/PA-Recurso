@@ -34,7 +34,7 @@ public class Page {
         this.filename = filename;
     }
 
-    public boolean isIsExternal() {
+    public boolean isExternal() {
         return isExternal;
     }
 

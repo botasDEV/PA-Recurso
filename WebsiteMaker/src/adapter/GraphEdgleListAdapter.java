@@ -6,7 +6,6 @@
 package adapter;
 
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
-import com.brunomnsilva.smartgraph.graphview.SmartPlacementStrategy;
 import digraph.Vertex;
 import digraph.interfaces.Edge;
 import java.util.List;
@@ -63,6 +62,33 @@ public class GraphEdgleListAdapter extends GraphEdgeList<String, String>{
             
             if(!exists) super.insertEdge(edge.vertices()[0].element().getFilename(), edge.vertices()[1].element().getFilename(), edge.element().getText());
         }
-        
     }
+
+    /**
+     * Removes the page
+     * 
+     * @param filename 
+     */
+    public void removePage(String filename) {
+        for(com.brunomnsilva.smartgraph.graph.Vertex<String> vertex : super.vertices()) {
+            if (vertex.element().equals(filename)) {
+                super.removeVertex(vertex);
+            }
+        }
+    }
+    
+     /**
+     * Removes the page
+     * 
+     * @param text 
+     */
+    public void removeHyperlink(String text) {
+        for(com.brunomnsilva.smartgraph.graph.Edge<String, String> edge : super.edges()) {
+            if (edge.element().equals(text)) {
+                super.removeEdge(edge);
+            }
+        }
+    }
+    
+    
 }

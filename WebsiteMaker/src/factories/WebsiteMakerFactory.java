@@ -9,6 +9,7 @@ import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import controllers.DrawController;
 import controllers.IController;
 import controllers.MainController;
+import models.Statistics;
 import models.Website;
 import models.Websites;
 import views.DrawWindow;
@@ -36,7 +37,7 @@ public class WebsiteMakerFactory {
             case "create":
                 if (!(model instanceof GraphEdgeList) && !(model instanceof Website)) throw new IllegalArgumentException("Something went wrong."); 
                 view = new DrawWindow((Website)model);
-                controller = new DrawController((Website)model, view, dao);
+                controller = new DrawController((Website)model, new Statistics(), view, dao);
                 break;
             default:
                 throw new IllegalArgumentException(" this type View does not exist");

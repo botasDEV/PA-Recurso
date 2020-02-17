@@ -5,10 +5,9 @@
  */
 package controllers;
 
-import views.IWindow;
-
 /**
- *
- * @author Rafae
+ * Controller - part of the MVC
+ * 
+ * @author Rafael Botas
  */
 public interface IController {}
